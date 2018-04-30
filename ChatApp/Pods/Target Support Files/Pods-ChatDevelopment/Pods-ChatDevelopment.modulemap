@@ -1,0 +1,6 @@
+framework module Pods_ChatDevelopment {
+  umbrella header "Pods-ChatDevelopment-umbrella.h"
+
+  export *
+  module * { export * }
+}
