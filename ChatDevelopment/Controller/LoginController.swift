@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class LoginController: UIViewController {
 
@@ -19,15 +20,46 @@ class LoginController: UIViewController {
         return view
     }()
     
-    let loginRegisterButton: UIButton = {
+    lazy var loginRegisterButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = UIColor(r: 80, g: 101, b: 161)
         button.setTitle("Register", for: [])
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor.white, for: [])
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        
+        button.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
+        
         return button
     }()
+    
+    @objc func handleRegister() {
+        guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
+            print("Password must be 6 characters or more")
+            return
+        }
+        Auth.auth().createUser(withEmail: email, password: password, completion: {(user: User?, error) in
+            if error != nil {
+                return
+            }
+        })
+        let user = Auth.auth().currentUser
+        guard let uid = user?.uid else {
+            return
+        }
+        //successfully authenticated user
+        let ref = Database.database().reference(fromURL: "https://chatappbuild.firebaseio.com")
+        let usersReference = ref.child("users").child(uid)
+        let values = ["name": name, "email": email]
+        usersReference.updateChildValues(values, withCompletionBlock: { (error, ref) in
+            if error != nil{
+                print(error as Any)
+                return
+            }
+            print("Saved user into FirebaseDB")
+        })
+
+    }
     
     let nameTextField: UITextField = {
         let tf = UITextField()
