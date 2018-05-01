@@ -61,7 +61,7 @@ class LoginController: UIViewController {
             print("Password must be 6 characters or more")
             return
         }
-        Auth.auth().createUser(withEmail: email, password: password, completion: {(user: User?, error) in
+        Auth.auth().createUser(withEmail: email, password: password, completion: { (user, error) in
             if error != nil {
                 return
             }
